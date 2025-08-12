@@ -1,33 +1,27 @@
 'use client'
 import { useEffect, useRef } from "react";
-import { Button } from "../ui/button";
-import { actions } from "@/data";
-import { FaArrowUp } from "react-icons/fa";
-import { RiVoiceAiFill } from "react-icons/ri";
 import { useInput } from "@/store/input";
-import { PlusIcon } from "lucide-react";
-import Wrapper from "../dropdown";
 import { useWrapperControl } from "@/store/utils";
+import Actions from "./actions";
 
 
 function Input() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const input = useInput((state) => state.input)
     const saveInput = useInput((state) => state.saveInput)
-    const trigger = useWrapperControl((state) => state.trigger)
 
     async function send() {
         try {
-            const result = await fetch('/api/openai', {
+            const result = await fetch('/api/gemini', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 }, body: JSON.stringify({
-                    "input": "Hello open ai"
+                    "input": "Hello gemini"
                 })
             });
             const response = await result.json()
-            console.log(response.json);
+            console.log(response.text);
         } catch (error) {
             console.log(error)
         }
@@ -74,63 +68,7 @@ function Input() {
                     />
                 </div>
 
-                <div className="flex  items-center justify-between  w-full  ">
-                    <div className="hidden sm:flex w-fit gap-2 justify-start items-end ">
-                        {
-                            actions.map((action, index) => {
-                                return (
-                                    <Button
-                                        variant="outline"
-                                        asChild
-                                        key={index}
-                                        className="border rounded-3xl font-normal cursor-pointer"
-                                    >
-                                        <span className="flex items-center gap-2">
-                                            <action.icon />
-                                            {action.label}
-                                        </span>
-                                    </Button>
-                                )
-                            })
-                        }
-                    </div>
-                    <div className="sm:hidden block relative  p-2 rounded-sm hover:bg-zinc-50">
-                        <PlusIcon className="text-black font-thin cursor-pointer" onClick={trigger} />
-                        <Wrapper className="absolute">
-                            {
-                                actions.map((action, index) => {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="border font-normal cursor-pointer"
-                                        >
-                                            <span className="flex items-center gap-2">
-                                                <action.icon />
-                                                {action.label}
-                                            </span>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </Wrapper>
-
-                    </div>
-
-                    <div className="w-full sm:w-auto flex justify-end">
-                        {
-                            input.length > 0 ?
-                                <button className="p-2 rounded-full bg-black flex items-center justify-center">
-                                    <FaArrowUp className="text-white" />
-                                </button> :
-                                <Button className={`border  font-normal cursor-pointer !rounded-full`}>
-                                    <span className="flex gap-2 items-center">
-                                        <RiVoiceAiFill />
-                                        Voice
-                                    </span>
-                                </Button>
-                        }
-                    </div>
-                </div>
+                <Actions />
 
             </form>
         </div>
