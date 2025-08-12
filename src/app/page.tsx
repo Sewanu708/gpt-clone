@@ -1,5 +1,4 @@
 import Input from "@/components/inputs/input";
-
 export default function Home() {
   return (
     <div className="flex flex-col h-full items-center justify-center">
