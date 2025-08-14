@@ -12,9 +12,9 @@ function Actions({ send }: { send: () => Promise<void> }) {
     const input = useInput((state) => state.input)
     const trigger = useWrapperControl((state) => state.trigger)
 
-    const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleSend = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
-        send()
+        await send()
     }
 
     return (

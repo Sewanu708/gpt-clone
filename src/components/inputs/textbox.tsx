@@ -3,14 +3,15 @@ import React, { useEffect, useRef } from 'react'
 interface Textbox {
     input: string;
     saveInput: (value: string) => void;
-    send: () => Promise<void>
+    send: () => Promise<void>,
+    isWriting: boolean
 }
 
-function Textbox({ input, saveInput, send }: Textbox) {
+function Textbox({ input, saveInput, send, isWriting }: Textbox) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     //send with enter key
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter") send()
+    const handleKeyPress = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter") await send()
     }
 
     // handle textbox increment 
@@ -41,6 +42,7 @@ function Textbox({ input, saveInput, send }: Textbox) {
                 value={input}
                 onChange={(e) => saveInput(e.target.value)}
                 onKeyDown={handleKeyPress}
+                disabled={isWriting}
             />
         </div>
 

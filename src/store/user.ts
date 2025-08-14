@@ -10,7 +10,9 @@ interface UserInput {
     getChat: (chatId: string) => Conversation[] | undefined,
     getLatestId: () => string | undefined,
     newChat: string,
-    setNewChatId: (id: string) => void
+    setNewChatId: (id: string) => void,
+    setIsWriting: (bool: boolean) => void,
+    isWriting: boolean
 }
 
 interface Conversation {
@@ -19,6 +21,11 @@ interface Conversation {
     user: string;
 }
 
+const noopstorage = {
+    getItem: () => null,
+    setItem: () => { },
+    removeItem: () => { }
+}
 export const useChat = create<UserInput>()(
     persist(
         (set, get) => ({
@@ -72,17 +79,15 @@ export const useChat = create<UserInput>()(
             newChat: '',
             setNewChatId: (id) => set({
                 newChat: id
+            }),
+            isWriting:false,
+            setIsWriting:(bool:boolean)=>set({
+                isWriting:bool
             })
 
         }), {
         name: 'userinput',
-        storage: createJSONStorage(() => typeof window === 'object' ? localStorage : noopstorage
+        storage: createJSONStorage(() => typeof window !== 'undefined' ? localStorage : noopstorage
         )
     }))
 
-
-const noopstorage = {
-    getItem: () => null,
-    setItem: () => { },
-    removeItem: () => { }
-}
