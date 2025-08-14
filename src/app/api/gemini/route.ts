@@ -7,7 +7,6 @@ const ai = new GoogleGenAI({
 export async function POST(req: NextRequest) {
     try {
         const { input } = await req.json()
-        console.log("This is gemini")
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             // contents: [
@@ -22,7 +21,7 @@ export async function POST(req: NextRequest) {
                 },
             }
         });
-        return NextResponse.json(response)
+        return NextResponse.json(response.candidates?.at(-1)?.content?.parts?.at(-1)?.text)
     } catch (error: any) {
         return NextResponse.json(
             {

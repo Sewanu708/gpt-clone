@@ -2,22 +2,14 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface ModelResponse {
-    ai: Map<string, string>,
-    saveResponse: (response: string, id: string) => void
+    ai: string,
+    saveResponse: (response: string) => void
 }
-export const useModel = create<ModelResponse>()(
-    persist(
-        (set) => ({
-            ai: new Map(),
-            saveResponse: (response, id) => set(state => {
-                const newResponse = new Map(state.ai)
-                newResponse.set(id, response)
-                return {
-                    ai: newResponse
-                }
-            })
-        }), {
-        name: "model"
-    }
-    )
+export const useModelResponse = create<ModelResponse>()(
+    (set) => ({
+        ai: '',
+        saveResponse: (response) => set({
+            ai: response
+        })
+    })
 )

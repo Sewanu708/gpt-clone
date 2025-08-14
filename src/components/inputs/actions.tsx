@@ -8,9 +8,15 @@ import { PlusIcon } from 'lucide-react'
 import { useInput } from '@/store/input'
 import { useWrapperControl } from '@/store/utils'
 
-function Actions() {
+function Actions({ send }: { send: () => Promise<void> }) {
     const input = useInput((state) => state.input)
     const trigger = useWrapperControl((state) => state.trigger)
+
+    const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        send()
+    }
+
     return (
         <div className="flex  items-center justify-between  w-full  ">
             <div className="hidden sm:flex w-fit gap-2 justify-start items-end ">
@@ -57,7 +63,7 @@ function Actions() {
             <div className="w-full sm:w-auto flex justify-end">
                 {
                     input.length > 0 ?
-                        <button className="p-2 rounded-full bg-black flex items-center justify-center">
+                        <button className="p-2 rounded-full bg-black flex items-center justify-center" onClick={handleSend}>
                             <FaArrowUp className="text-white" />
                         </button> :
                         <Button className={`border  font-normal cursor-pointer !rounded-full`}>

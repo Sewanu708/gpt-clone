@@ -1,74 +1,67 @@
 'use client'
 import { useEffect, useRef } from "react";
 import { useInput } from "@/store/input";
-import { useWrapperControl } from "@/store/utils";
 import Actions from "./actions";
+import Textbox from "./textbox";
+import { useRouter } from "next/navigation";
+import { useChat } from "@/store/user";
+import { useShallow } from "zustand/shallow";
 
 
-function Input() {
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
+function Input({ newChat = false }: { newChat?: boolean }) {
+    console.log(newChat)
+    const router = useRouter()
     const input = useInput((state) => state.input)
     const saveInput = useInput((state) => state.saveInput)
+    const { createNewChat, chatId, getChat, storeUserInputs, storeModelResponse, newChatId, saveChatId } = useChat(
+        useShallow((state) => ({
+            createNewChat: state.createNewChat,
+            chatId: state.getLatestId,
+            storeUserInputs: state.storeUserInputs,
+            storeModelResponse: state.storeModelOutput,
+            getChat: state.getChat,
+            newChatId: state.newChat,
+            saveChatId: state.setNewChatId
+        }))
+    )
 
+
+    if (newChat) {
+        createNewChat()
+        const id = chatId()
+        if (!id) return;
+        saveChatId(id)
+    }
     async function send() {
+        const id = newChatId
+        storeUserInputs(input, id)
+        router.replace(`/chats/${id}`)
+        // get conversation id 
+        const con_id = getChat(id)?.at(-1)?.id
+        if (!con_id) return;
         try {
             const result = await fetch('/api/gemini', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 }, body: JSON.stringify({
-                    "input": "Hello gemini"
+                    "input": input
                 })
             });
             const response = await result.json()
-            console.log(response.text);
+            storeModelResponse(response, id, con_id)
         } catch (error) {
             console.log(error)
         }
-
-        // create a state, that saves it.
     }
 
-    //send with enter key
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter") send()
-    }
-
-    // handle textbox increment 
-    const handleTextDynamicSize = (textHTMLElement: HTMLTextAreaElement) => {
-        // get the border heights
-        const { borderTopWidth, borderBottomWidth } = window.getComputedStyle(textHTMLElement)
-
-        // get the full height of the text box 
-        const scrollHeight = textHTMLElement.scrollHeight + parseFloat(borderTopWidth) + parseFloat(borderBottomWidth)
-
-        return Math.min(scrollHeight, 500)
-    }
-    useEffect(() => {
-        const textHTMLElement = textareaRef.current
-        if (textHTMLElement) {
-            textHTMLElement.style.height = 'auto';
-            textHTMLElement.style.height = handleTextDynamicSize(textHTMLElement) + 'px'
-        }
-    }, [input])
 
 
     return (
         <div className="md:max-w-3xl sm:w-[60%] w-[90%] sm:max-w-lg rounded-3xl shadow-sm flex flex-col items-start justify-center">
             <form className="w-full px-3 pb-3">
-                <div className="flex items-center justify-center w-full">
-                    <textarea
-                        ref={textareaRef}
-                        placeholder="Ask anything"
-                        className="w-full  py-3 text-sm sm:text-base border-0 resize-none outline-none bg-transparent"
-                        rows={1}
-                        value={input}
-                        onChange={(e) => saveInput(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                    />
-                </div>
-
-                <Actions />
+                <Textbox input={input} send={send} saveInput={saveInput} />
+                <Actions send={send} />
 
             </form>
         </div>
