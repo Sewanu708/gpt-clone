@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             // contents: [
-            //     { role: "user", parts: [{ text: "What's the capital of France?" }] },
+            //     { role: "user", parts: [{ text   : "What's the capital of France?" }] },
             //     { role: "model", parts: [{ text: "Paris." }] },
             //     { role: "user", parts: [{ text: "And what about Germany?" }]}
             // ],

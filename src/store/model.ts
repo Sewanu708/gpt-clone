@@ -1,15 +1,24 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-interface ModelResponse {
+interface Model {
     ai: string,
     saveResponse: (response: string) => void
 }
-export const useModelResponse = create<ModelResponse>()(
-    (set) => ({
-        ai: '',
+
+const noopstorage = {
+    getItem: () => null,
+    setItem: () => { },
+    removeItem: () => { }
+}
+export const useModel = create<Model>()(
+    persist((set) => ({
+        ai: 'Gemini',
         saveResponse: (response) => set({
             ai: response
         })
+    }), {
+        name: 'selected-model',
+        storage: createJSONStorage(() => typeof window != undefined ? localStorage : noopstorage)
     })
 )

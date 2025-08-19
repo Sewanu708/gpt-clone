@@ -3,11 +3,8 @@ import { useWrapperControl } from '@/store/utils';
 import React, { useEffect, useRef } from 'react'
 import { useShallow } from 'zustand/shallow';
 
-function Wrapper({ children, className }: { children: React.ReactNode, className: string }) {
-    const { isOpen, trigger } = useWrapperControl(useShallow((state) => ({
-        isOpen: state.isOpen,
-        trigger: state.trigger
-    })))
+function Wrapper({ children, className, isOpen, trigger }: { children: React.ReactNode, className: string, trigger:()=>void, isOpen:boolean}) {
+   
     const wrapper = useRef<HTMLDivElement>(null);
 
     const handleClick = (e: Event) => {
@@ -27,7 +24,7 @@ function Wrapper({ children, className }: { children: React.ReactNode, className
         document.addEventListener('keydown', handleKeyDown)
         return () => document.removeEventListener('keydown', handleKeyDown)
     }, [wrapper, isOpen])
-
+    
     return (
         isOpen ? <div ref={wrapper} className={className}>
             {children}

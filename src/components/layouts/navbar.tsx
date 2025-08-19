@@ -3,7 +3,7 @@ import { RiEdit2Line } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
 import { GoQuestion } from "react-icons/go";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 function Navbar() {
     return (

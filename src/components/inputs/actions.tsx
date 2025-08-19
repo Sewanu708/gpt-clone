@@ -11,6 +11,7 @@ import { useWrapperControl } from '@/store/utils'
 function Actions({ send }: { send: () => Promise<void> }) {
     const input = useInput((state) => state.input)
     const trigger = useWrapperControl((state) => state.trigger)
+    const isOpen = useWrapperControl((state) => state.isOpen)
 
     const handleSend = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
@@ -40,7 +41,7 @@ function Actions({ send }: { send: () => Promise<void> }) {
             </div>
             <div className="sm:hidden block relative  p-2 rounded-sm hover:bg-zinc-50">
                 <PlusIcon className="text-black font-thin cursor-pointer" onClick={trigger} />
-                <Wrapper className="absolute">
+                <Wrapper className="absolute" trigger={trigger} isOpen={isOpen}>
                     {
                         actions.map((action, index) => {
                             return (

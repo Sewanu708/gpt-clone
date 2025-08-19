@@ -11,15 +11,6 @@ function ModelOutput({ modelResponse }: { modelResponse: string }) {
                 <Markdown>{modelResponse}</Markdown>
             </div>
 
-            <div
-                className="absolute left-0 bottom-[-30px] flex items-center text-sm cursor-pointer text-zinc-500 hover:text-black transition-all duration-200">
-                {/* {copied ? <FaCheck /> : <IoCopyOutline />} */} <FaCheck />
-            </div>
-
-            <div
-                className="absolute left-10 bottom-[-30px] flex items-center text-sm cursor-pointer text-zinc-500 hover:text-black transition-all duration-200" >
-                <RiEdit2Line />
-            </div>
         </div>
     )
 }
