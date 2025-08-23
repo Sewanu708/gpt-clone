@@ -2,7 +2,7 @@ import Wrapper from "@/components/dropdown"
 import { models } from "@/data"
 import Image from "next/image"
 import { RiExpandUpDownLine } from "react-icons/ri"
-import Models from "./models"
+import Models from "./orgs"
 import gemini from '../../../../public/google-gemini-icon.svg'
 
 interface Headerprops {
@@ -15,9 +15,7 @@ interface Headerprops {
 
 function Header({ trigger, isWrapperOpen, isOpen, selectedmodel }: Headerprops) {
 
-
-    // fetch model details
-    const modeldetails = models.find(model => model.name === selectedmodel) ?? {
+    const modeldetails = models.find(model => model.key === selectedmodel) ?? {
         name: 'Gemini',
         icon: gemini,
         provider: 'Google Deepmind'
@@ -26,7 +24,6 @@ function Header({ trigger, isWrapperOpen, isOpen, selectedmodel }: Headerprops) 
     return (
         <div className="p-2 rounded-lg cursor-pointer hover:bg-zinc-100 flex items-center justify-between" onClick={trigger}>
             <div className="flex items-center justify-start gap-2">
-
                 <div className="w-8 h-8">
                     <Image src={modeldetails?.icon} alt={modeldetails?.name} />
                 </div>

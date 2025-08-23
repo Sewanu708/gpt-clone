@@ -6,11 +6,11 @@ import Textbox from "./textbox";
 import { useRouter } from "next/navigation";
 import { useChat } from "@/store/user";
 import { useShallow } from "zustand/shallow";
+import axios from 'axios'
+
 
 function Input({ newChat = false }: { newChat?: boolean }) {
-
     const router = useRouter()
-
     const input = useInput((state) => state.input)
     const saveInput = useInput((state) => state.saveInput)
     const { createNewChat, chatId, getChat, storeUserInputs, storeModelResponse, newChatId, saveChatId, setWriting, isWriting } = useChat(
@@ -39,7 +39,6 @@ function Input({ newChat = false }: { newChat?: boolean }) {
 
     function send() {
         let first_chat = newChat;
-
         return async function () {
             setWriting(true)
             const id = newChatId
@@ -47,19 +46,21 @@ function Input({ newChat = false }: { newChat?: boolean }) {
             saveInput('')
             if (first_chat) router.replace(`/chats/${id}`)
             first_chat = false
-            // get conversation id 
+            // get chat context
+            const chats = getChat(id)
+            // get present conversation id 
             const con_id = getChat(id)?.at(-1)?.id
             if (!con_id) return;
             try {
-                const result = await fetch('/api/gemini', {
-                    method: 'POST',
+                const result = await axios.post('/api/gemini', {
+                    "input": input,
+                    "chats": chats
+                }, {
                     headers: {
                         "Content-Type": "application/json"
-                    }, body: JSON.stringify({
-                        "input": input
-                    })
+                    }
                 });
-                const response = await result.json()
+                const response = await result.data
                 storeModelResponse(response, id, con_id)
                 setTimeout(() => setWriting(false), 10)
             } catch (error) {

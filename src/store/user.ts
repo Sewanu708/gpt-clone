@@ -12,7 +12,11 @@ interface UserInput {
     newChat: string,
     setNewChatId: (id: string) => void,
     setIsWriting: (bool: boolean) => void,
-    isWriting: boolean
+    isWriting: boolean,
+    title: { id: string, header: string }[],
+    getTitle: (id: string) => string | undefined,
+    setTitle: (id: string, title: string) => void
+
 }
 
 interface Conversation {
@@ -33,6 +37,7 @@ export const useChat = create<UserInput>()(
             chatIds: [],
             createNewChat: () => set((state) => {
                 const id = crypto.randomUUID()
+                state.setTitle(id, 'New chat')
                 const newChat = [...state.chatIds, id]
                 const newUser = { ...state.user, [id]: [] }
                 return {
@@ -46,7 +51,7 @@ export const useChat = create<UserInput>()(
                 const conversation = { id: newId, user: input, model: '' }
                 const chat = state.user[chatId]
                 const newChat = [...chat, conversation]
-
+                state.setTitle(chatId, input)
                 return {
                     user: { ...state.user, [chatId]: newChat }
                 }
@@ -80,9 +85,23 @@ export const useChat = create<UserInput>()(
             setNewChatId: (id) => set({
                 newChat: id
             }),
-            isWriting:false,
-            setIsWriting:(bool:boolean)=>set({
-                isWriting:bool
+            isWriting: false,
+            setIsWriting: (bool: boolean) => set({
+                isWriting: bool
+            }),
+            title: [],
+            getTitle: (id: string) => {
+                const state = get()
+                return state.title.find(chat => chat.id === id)?.header
+            },
+            setTitle: (id: string, title: string) => set((state) => {
+                const chatIndex = state.title.findIndex(chat => chat.id === id)
+                if (chatIndex < 0) return state
+                const newTitleArray = [...state.title]
+                newTitleArray[chatIndex] = { id, header: title }
+                return {
+                    title: newTitleArray
+                }
             })
 
         }), {

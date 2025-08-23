@@ -1,12 +1,19 @@
-import { models } from "@/data";
-import { useModel } from "@/store/model";
+'use client'
+import { aiModels } from "@/data";
+import { useModel, useModels } from "@/store/model";
+import { useHeaderToggle } from "@/store/utils";
 import { Check } from "lucide-react";
-import Image from "next/image";
 
-function Models() {
-    const selectedmodel = useModel(state => state.ai)
-    const selectmodel = useModel(state => state.saveResponse)
-
+function Model() {
+    const selectedOrgs = useModels(state => state.ai)
+    const saveSelectedmodel = useModel(state => state.saveResponse)
+    const selectedmodel = useModel(state => state.model)
+    const closeDropdown = useHeaderToggle((state) => state.trigger)
+    const models = aiModels[selectedOrgs]
+    const saveModel = (value: string) => {
+        saveSelectedmodel(value)
+        closeDropdown()
+    }
 
     return (
         <div className="w-64 p-2 rounded-lg bg-white shadow-sm">
@@ -17,11 +24,8 @@ function Models() {
             {
                 models.map((model, index) => {
                     const matchedmodel = model.name === selectedmodel
-                    return <div className='p-2 rounded-lg cursor-pointer hover:bg-zinc-100 flex items-center justify-between w-full' key={index} onClick={() => selectmodel(model.name)}>
+                    return <div className='p-2 rounded-lg cursor-pointer hover:bg-zinc-100 flex items-center justify-between w-full' key={index} onClick={() => saveModel(model.name)}>
                         <div className="flex items-center justify-start gap-2">
-                            <div className="w-4 h-4  rounded-sm">
-                                <Image src={model.icon} alt={model.name}/>
-                            </div>
                             <div className="text-sm font-500">
                                 {model.name}
                             </div>
@@ -40,4 +44,4 @@ function Models() {
     )
 }
 
-export default Models
+export default Model
