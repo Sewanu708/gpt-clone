@@ -6,15 +6,12 @@ const ai = new GoogleGenAI({
 })
 export async function POST(req: NextRequest) {
     try {
-        const { input } = await req.json()
+        const {chats } = await req.json()
+        const data = format(chats)
+        const modelinputs = [...data, { role: 'user', parts: [{ text: 'return a concise title for this chat. maximum of seven words. Return just one' }] }]
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
-            // contents: [
-            //     { role: "user", parts: [{ text   : "What's the capital of France?" }] },
-            //     { role: "model", parts: [{ text: "Paris." }] },
-            //     { role: "user", parts: [{ text: "And what about Germany?" }]}
-            // ],
-            contents: input,
+            contents: modelinputs,
             config: {
                 thinkingConfig: {
                     thinkingBudget: 0, // Disables thinking
@@ -30,4 +27,23 @@ export async function POST(req: NextRequest) {
         )
     }
 }
+
+interface chat {
+    id: string,
+    user: string,
+    model: string
+}
+const format = (chats: chat[]) => {
+    const formatted = chats.reduce((accum, chat) => {
+        const user = { role: 'user', parts: [{ text: chat.user }] }
+        const model = { role: 'model', parts: [{ text: chat.model }] }
+        accum.push(user, model)
+        return accum
+    }, [] as {role:string, parts:{}[]}[])
+
+    return formatted
+}
+
+
+
 

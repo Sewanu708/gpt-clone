@@ -5,7 +5,7 @@ interface UserInput {
     user: Record<string, Conversation[]>,
     chatIds: string[],
     createNewChat: () => void
-    storeUserInputs: (input: string, chatId: string) => void,
+    storeUserInputs: (input: string, chatId: string, agent: string) => void,
     storeModelOutput: (input: string, chatId: string, conversationId: string) => void,
     getChat: (chatId: string) => Conversation[] | undefined,
     getLatestId: () => string | undefined,
@@ -19,10 +19,11 @@ interface UserInput {
 
 }
 
-interface Conversation {
+export interface Conversation {
     id: string;
     model: string;
     user: string;
+    agent: string;
 }
 
 const noopstorage = {
@@ -36,22 +37,34 @@ export const useChat = create<UserInput>()(
             user: {},
             chatIds: [],
             createNewChat: () => set((state) => {
+
                 const id = crypto.randomUUID()
-                state.setTitle(id, 'New chat')
                 const newChat = [...state.chatIds, id]
                 const newUser = { ...state.user, [id]: [] }
+                // if user is empty, create new chat
+                const latest = state.getLatestId()
+                if (!latest) {
+                    state.setTitle(id, 'New chat')
+                    return {
+                        chatIds: newChat,
+                        user: newUser
+                    }
+                }
+                const chats = state.user[latest]
+                // if latest chat is new don't create new chat
+                if (chats?.length <= 1 || chats[0]?.model == '') return state
+                state.setTitle(id, 'New chat')
                 return {
                     chatIds: newChat,
                     user: newUser
                 }
             }),
 
-            storeUserInputs: (input, chatId) => set((state) => {
+            storeUserInputs: (input, chatId, agent) => set((state) => {
                 const newId = crypto.randomUUID()
-                const conversation = { id: newId, user: input, model: '' }
+                const conversation = { id: newId, user: input, model: '', agent }
                 const chat = state.user[chatId]
                 const newChat = [...chat, conversation]
-                state.setTitle(chatId, input)
                 return {
                     user: { ...state.user, [chatId]: newChat }
                 }
@@ -67,7 +80,6 @@ export const useChat = create<UserInput>()(
                     ...currentConversation[index], model: input
                 }
                 currentConversation[index] = updatedConversation
-
                 return {
                     user: { ...state.user, [chatId]: currentConversation }
                 }
@@ -95,10 +107,18 @@ export const useChat = create<UserInput>()(
                 return state.title.find(chat => chat.id === id)?.header
             },
             setTitle: (id: string, title: string) => set((state) => {
-                const chatIndex = state.title.findIndex(chat => chat.id === id)
-                if (chatIndex < 0) return state
+                if (title.length === 0) return state
+                if (id.length===0) return state
+                const chatIndex = state.title.findIndex(chat => chat.id == id)
+                if (chatIndex >= 0) {
+                    const newTitleArray = [...state.title]
+                    newTitleArray[chatIndex] = { id, header: title }
+                    return {
+                        title: newTitleArray
+                    }
+                }
                 const newTitleArray = [...state.title]
-                newTitleArray[chatIndex] = { id, header: title }
+                newTitleArray.push({ id, header: title })
                 return {
                     title: newTitleArray
                 }

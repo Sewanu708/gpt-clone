@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 
 interface Textbox {
     input: string;
@@ -10,12 +10,15 @@ interface Textbox {
 function Textbox({ input, saveInput, send, isWriting }: Textbox) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     //send with enter key
-    const handleKeyPress = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter") await send()
-    }
+    const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            send()
+        }
+    }, [send])
 
     // handle textbox increment 
-    const handleTextDynamicSize = (textHTMLElement: HTMLTextAreaElement) => {
+    const handleTextDynamicSize = useCallback((textHTMLElement: HTMLTextAreaElement) => {
         // get the border heights
         const { borderTopWidth, borderBottomWidth } = window.getComputedStyle(textHTMLElement)
 
@@ -23,14 +26,20 @@ function Textbox({ input, saveInput, send, isWriting }: Textbox) {
         const scrollHeight = textHTMLElement.scrollHeight + parseFloat(borderTopWidth) + parseFloat(borderBottomWidth)
 
         return Math.min(scrollHeight, 200)
-    }
-    useEffect(() => {
-        const textHTMLElement = textareaRef.current
+    }, [])
+
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        console.log(e.target.value)
+        saveInput(e.target.value)
+        const textHTMLElement = e.target
         if (textHTMLElement) {
             textHTMLElement.style.height = 'auto';
             textHTMLElement.style.height = handleTextDynamicSize(textHTMLElement) + 'px'
         }
-    }, [input])
+    }, [saveInput, handleTextDynamicSize])
+
+
+
 
     return (
         <div className="flex items-center justify-center w-full">
@@ -40,7 +49,7 @@ function Textbox({ input, saveInput, send, isWriting }: Textbox) {
                 className="w-full  py-3 text-sm sm:text-base border-0 resize-none outline-none bg-transparent"
                 rows={1}
                 value={input}
-                onChange={(e) => saveInput(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={handleKeyPress}
                 disabled={isWriting}
             />
@@ -49,4 +58,4 @@ function Textbox({ input, saveInput, send, isWriting }: Textbox) {
     )
 }
 
-export default Textbox
+export default React.memo(Textbox)

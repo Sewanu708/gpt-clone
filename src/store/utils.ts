@@ -36,3 +36,8 @@ export const useHeaderToggle = create<WrapperProps>()((set) => ({
     trigger: () => set((state) => ({ isOpen: !state.isOpen }))
 }))
 
+export const useHistoryToggle = create<WrapperProps>()((set) => ({
+    isOpen: false,
+    trigger: () => set((state) => ({ isOpen: !state.isOpen }))
+}))
+

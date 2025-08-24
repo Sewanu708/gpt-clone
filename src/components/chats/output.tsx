@@ -1,16 +1,22 @@
+'use client'
+import { models } from '@/data'
+import Image from 'next/image'
 import React from 'react'
-import { FaCheck } from 'react-icons/fa';
-import { RiEdit2Line } from 'react-icons/ri';
 import Markdown from 'react-markdown'
-function ModelOutput({ modelResponse }: { modelResponse: string }) {
+function ModelOutput({ modelResponse, loading, agent }: { modelResponse: string, loading: boolean, agent: string }) {
+    const modeldetails = models.find(model => model.key === agent)
     return (
         <div
-            className="w-full   flex items-center justify-start mt-2 relative"
+            className=" w-[70%] flex flex-col gap-2 items-start justify-start mt-2 relative"
         >
-            <div className="select-text">
-                <Markdown>{modelResponse}</Markdown>
+            <div className="w-4 h-4">
+                <Image src={modeldetails?.icon} alt={modeldetails?.name || ''} />
             </div>
-
+            {
+                loading ? <div className="bg-black ai-loading"></div> : <div className="select-text">
+                    <Markdown>{modelResponse}</Markdown>
+                </div>
+            }
         </div>
     )
 }

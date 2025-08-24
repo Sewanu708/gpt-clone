@@ -1,12 +1,16 @@
-function Footer() {
+'use client'
+import { useModel } from "@/store/model"
 
-    const initialFooter = <div className="text-[12px] sm:text-[14px]">
-        By messaging ChatGPT, you agree to our  <span className="underline">Terms</span> and have read our  <span className="underline">
+function Footer() {
+    const model = useModel(state=>state.model)
+
+    const initialFooter = <div className="text-[12px] text-zinc-500">
+        By messaging {model}, you agree to our  <span className="underline">Terms</span> and have read our  <span className="underline">
             Privacy Policy </span>
     </div>
 
-    const mainFooter = <div className="text-[12px] sm:text-[14px]"> 
-        ChatGPT can make mistakes. Check important info
+    const mainFooter = <div className="text-[12px] text-zinc-500"> 
+        {model} can make mistakes. Check important info
     </div>
 
     const startChat = false
