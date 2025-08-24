@@ -77,7 +77,7 @@ function Input({ newChat = false, existingID }: { newChat?: boolean, existingID?
         try {
             const updatedchats = getChat(id)
             if (!updatedchats || updatedchats?.length >= 4) return
-            const handleTitle = (value: string) => setTitle(newChatId, value)
+            const handleTitle = (value: string) => setTitle(id, value)
             await getTitle(updatedchats, handleTitle)
         } catch (error) {
             console.error(error)

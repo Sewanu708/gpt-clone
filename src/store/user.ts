@@ -43,8 +43,10 @@ export const useChat = create<UserInput>()(
                 const newUser = { ...state.user, [id]: [] }
                 // if user is empty, create new chat
                 const latest = state.getLatestId()
+                
                 if (!latest) {
                     state.setTitle(id, 'New chat')
+                    console.log('user is empty,so i created a new chat')
                     return {
                         chatIds: newChat,
                         user: newUser
@@ -54,6 +56,7 @@ export const useChat = create<UserInput>()(
                 // if latest chat is new don't create new chat
                 if (chats?.length <= 1 || chats[0]?.model == '') return state
                 state.setTitle(id, 'New chat')
+                console.log('new chat created, user is not empty')
                 return {
                     chatIds: newChat,
                     user: newUser
